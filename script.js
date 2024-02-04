@@ -138,14 +138,14 @@ function zakonczenie() {
   localStorage.setItem("gracz", JSON.stringify(gracz));
 
   const gameBoard = document.querySelector(".gameboard");
-  gameBoard.innerHTML = `<div class="wygrana">Brawo ${gracz.imie}! Gra skończona w ${gracz.iloscRuchow} ruchach.</div>`;
+  gameBoard.innerHTML = `<div class="wygrana"><h1>Brawo ${gracz.imie}! Gra skończona w ${gracz.iloscRuchow} ruchach.</h1></div>`;
   scoreElement.style.display = "none";
 
   czyMniejNiz20().then((result) => {
     if (result) {
-      scoreElement.innerHTML = `<div class="score">Gratulacje, twój wynik mieści się w mniej niż 20 ruchach!</div>`;
+      scoreElement.innerHTML = `<div class="score"><h2>Gratulacje, twój wynik mieści się w mniej niż 20 ruchach!</h2></div>`;
     } else {
-      scoreElement.innerHTML = `<div class="score">Twój wynik przekracza 20 ruchów. Następnym razem postaraj się uzyskać lepszy wynik</div>`;
+      scoreElement.innerHTML = `<div class="score"><h2>Twój wynik przekracza 20 ruchów. Następnym razem postaraj się uzyskać lepszy wynik</h2></div>`;
     }
     scoreElement.style.display = "flex";
   });

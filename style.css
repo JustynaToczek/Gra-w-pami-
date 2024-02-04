@@ -39,7 +39,6 @@ body {
 
 .wygrana,
 .formularz {
-  font-size: 25px;
   border-radius: 50%;
   background-color: white;
   text-align: center;
@@ -66,4 +65,12 @@ button {
   height: 40px;
   background-color: #5f6477;
   color: rgb(255, 255, 255);
+}
+h2 {
+  font-weight: normal;
+  font-size: 22px;
+}
+h1 {
+  font-weight: normal;
+  font-size: 25px;
 }
