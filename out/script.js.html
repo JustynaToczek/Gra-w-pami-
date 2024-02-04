@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: script.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: script.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { tablicaImg, mieszaj } from "./tablica.js";
+/**
+ * Tablica przechowująca indeksy odwróconych kart
+ * @type {number[]}
+ */
+let odwroconekarty = [];
+let sprarowanekarty = [];
+let podwojonaTablicaImg;
+let kartySaOdwrocone = false;
+
+const gracz = {
+  imie: "",
+  iloscRuchow: 0,
+};
+
+//usuniecie widocznosci licznika po wejsciu na strone
+const scoreElement = document.querySelector(".score");
+scoreElement.style.display = "none";
+
+const formularz = document.querySelector("form");
+const inputImie = document.getElementById("imie");
+
+formularz.addEventListener("submit", function (event) {
+  event.preventDefault(); //funkcja preventDefault() zapobiega domyślnej akcji formularza
+  const inputValue = inputImie.value.trim();
+
+  if (inputValue === "") {
+    alert("Wprowadź swoje imię");
+  } else {
+    gracz.imie = inputImie.value;
+    document.querySelector(".formularz").style.display = "none"; //ukrywam formularz po kliknięciu submit
+    startGame();
+  }
+});
+/**
+ *
+ */
+function startGame() {
+  scoreElement.style.display = "flex";
+
+  podwojonaTablicaImg = [...tablicaImg, ...tablicaImg];
+  mieszaj(podwojonaTablicaImg);
+  const gameBoard = document.querySelector(".gameboard");
+
+  podwojonaTablicaImg.forEach((imgSrc, index) => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.setAttribute("indexKarty", index);
+    card.style.backgroundImage = `url("img/cover.png")`;
+    card.addEventListener("mouseover", () => powieksz(index));
+    card.addEventListener("mouseout", () => zmniejsz(index));
+    card.addEventListener("click", () => flipCard(index));
+    gameBoard.appendChild(card);
+  });
+}
+
+function powieksz(cardIndex) {
+  const wybranaKarta = document.querySelector(
+    `.card[indexKarty="${cardIndex}"]`
+  );
+  wybranaKarta.style.transform = "scale(1.1)";
+}
+
+function zmniejsz(cardIndex) {
+  const wybranaKarta = document.querySelector(
+    `.card[indexKarty="${cardIndex}"]`
+  );
+  wybranaKarta.style.transform = "scale(1)";
+}
+
+function flipCard(cardIndex) {
+  if (kartySaOdwrocone) return; //jesli poprzednie karty jeszcze sa odkryte, to nie mozna kolejnych kart odwrocic
+  const clickedCard = document.querySelector(
+    `.card[indexKarty="${cardIndex}"]`
+  );
+
+  if (!odwroconekarty.includes(cardIndex) &amp;&amp; odwroconekarty.length &lt; 2) {
+    odwroconekarty.push(cardIndex);
+    clickedCard.style.backgroundImage = `url(${podwojonaTablicaImg[cardIndex]})`;
+
+    if (odwroconekarty.length === 2) {
+      kartySaOdwrocone = true;
+      setTimeout(czyPasuja, 500);
+    }
+  }
+}
+
+function czyPasuja() {
+  const [firstCard, secondCard] = odwroconekarty;
+  const firstImg = podwojonaTablicaImg[firstCard];
+  const secondImg = podwojonaTablicaImg[secondCard];
+
+  const firstCardElement = document.querySelector(
+    `.card[indexKarty="${firstCard}"]`
+  );
+  const secondCardElement = document.querySelector(
+    `.card[indexKarty="${secondCard}"]`
+  );
+
+  if (firstImg === secondImg) {
+    sprarowanekarty.push(...odwroconekarty);
+    setTimeout(() => {
+      firstCardElement.style.visibility = "hidden";
+      secondCardElement.style.visibility = "hidden";
+      kartySaOdwrocone = false;
+      czyGraSieSkonczyla(zakonczenie);
+    }, 500);
+  } else {
+    setTimeout(() => {
+      firstCardElement.style.backgroundImage = 'url("img/cover.png")';
+      secondCardElement.style.backgroundImage = 'url("img/cover.png")';
+      kartySaOdwrocone = false;
+    }, 500);
+  }
+
+  gracz.iloscRuchow++;
+  document.getElementById("licznik").innerText = gracz.iloscRuchow;
+  odwroconekarty = [];
+}
+
+function czyGraSieSkonczyla(callback) {
+  if (sprarowanekarty.length === podwojonaTablicaImg.length) {
+    callback();
+  }
+}
+
+function zakonczenie() {
+  //zapisanie ostatecznych danych gracza do localStorage po zakończeniu gry w formacie json
+  localStorage.setItem("gracz", JSON.stringify(gracz));
+
+  const gameBoard = document.querySelector(".gameboard");
+  gameBoard.innerHTML = `&lt;div class="wygrana">Brawo ${gracz.imie}! Gra skończona w ${gracz.iloscRuchow} ruchach.&lt;/div>`;
+  scoreElement.style.display = "none";
+
+  czyMniejNiz20().then((result) => {
+    if (result) {
+      scoreElement.innerHTML = `&lt;div class="score">Gratulacje, twój wynik mieści się w mniej niż 20 ruchach!&lt;/div>`;
+    } else {
+      scoreElement.innerHTML = `&lt;div class="score">Twój wynik przekracza 20 ruchów. Następnym razem postaraj się uzyskać lepszy wynik&lt;/div>`;
+    }
+    scoreElement.style.display = "flex";
+  });
+}
+
+function czyMniejNiz20() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(gracz.iloscRuchow &lt; 20);
+    }, 500);
+  });
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#odwroconekarty">odwroconekarty</a></li><li><a href="global.html#startGame">startGame</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Feb 04 2024 13:41:50 GMT+0100 (czas środkowoeuropejski standardowy)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
