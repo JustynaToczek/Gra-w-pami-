@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: tablica.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,45 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: tablica.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * tablica przechowująca ścieżki do zdjęć.
+ * @type {string[]}
+ */
+const tablicaImg = [
+  "img/pies.jpg",
+  "img/kot.jpg",
+  "img/chomik.jpg",
+  "img/lis.jpg",
+  "img/slon.jpg",
+  "img/zebra.jpg",
+  "img/zolw.jpg",
+  "img/zyrafa.jpg",
+];
 
+/**
+ * Algorytm tasowania Fisher-Yates dla danej tablicy.
+ * @param {Array} array Tablica do przetasowania.
+ */
+function mieszaj(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export { tablicaImg, mieszaj };
+</code></pre>
+        </article>
+    </section>
 
 
 

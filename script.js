@@ -1,34 +1,72 @@
 import { tablicaImg, mieszaj } from "./tablica.js";
+
 /**
- * Tablica przechowująca indeksy odwróconych kart
+ * Tablica przechowująca indeksy odwróconych kart.
  * @type {number[]}
  */
 let odwroconekarty = [];
 
 /**
- * Tablica przechowująca indeksy sparowanych kart
+ * Tablica przechowująca indeksy sparowanych kart.
  * @type {number[]}
  */
 let sprarowanekarty = [];
 
 /**
- *
+ * Podwojona tablica zdjęć.
+ * @type {Array}
  */
 let podwojonaTablicaImg;
+
+/**
+ * Flaga określająca, czy karty są w danym momencie odwrócone.
+ * @type {boolean}
+ */
 let kartySaOdwrocone = false;
 
+/**
+ * Obiekt reprezentujący gracza.
+ * @typedef {Object} Gracz
+ * @property {string} imie Imię gracza
+ * @property {number} iloscRuchow Ilość wykonanych ruchów przez gracza
+ */
+
+/**
+ *  @type {Gracz}
+ */
 const gracz = {
   imie: "",
   iloscRuchow: 0,
 };
 
-//usuniecie widocznosci licznika po wejsciu na strone
+/**
+ * Element reprezentujący licznik ruchów.
+ * @type {HTMLElement}
+ */
 const scoreElement = document.querySelector(".score");
-scoreElement.style.display = "none";
 
+scoreElement.style.display = "none"; //usuniecie widocznosci licznika po wejsciu na strone
+
+/**
+ * Formularz użyty w celu wprowadzenia imienia przez gracza.
+ * @type {HTMLFormElement}
+ */
 const formularz = document.querySelector("form");
+
+/**
+ * Pole wprowadzania imienia w formularzu.
+ * @type {HTMLInputElement}
+ */
 const inputImie = document.getElementById("imie");
 
+/**
+ * Nasłuchiwanie zdarzenia "submit" dla formularza. Jeśli formularz zostanie wysłany to wykonują się poniższe kroki.
+ * Zapobieganie domyślnej akcji formularza.
+ * Sprawdzenie, czy wprowadzono imię. Jeśli nie, następuje wyświetlenie alertu z prośbą o wprowadzenie imienia.
+ * Jeśli wprowadzono imię, następuje ustawienie imienia gracza, poprzez przypisanie obiektowi reprezentującemu gracza właściwość jego imienia.
+ * Następnie formularz się ukrywa i wywołana zostaje funkcja rozpoczynająca grę.
+ * @param {Event} event Obiekt zdarzenia submit.
+ */
 formularz.addEventListener("submit", function (event) {
   event.preventDefault(); //funkcja preventDefault() zapobiega domyślnej akcji formularza
   const inputValue = inputImie.value.trim();
@@ -41,8 +79,11 @@ formularz.addEventListener("submit", function (event) {
     startGame();
   }
 });
+
 /**
- *
+ * Rozpoczyna grę poprzez ustawienie widoczności elementu wyświetlającego wynik, zainicjowanie tablicy zawierającej dwukrotnie więcej elemntów
+ * niż tablica zawierająca ścieżki do zdjęć, potasowanie kart i ułożenie kart na planszy.
+ * Każdej karcie przypisywany jest nasłuchwicz zdarzeń "mouseover", "mouseout,", "click".
  */
 function startGame() {
   scoreElement.style.display = "flex";
@@ -63,6 +104,10 @@ function startGame() {
   });
 }
 
+/**
+ * Powiększa wybraną kartę po najechaniu na nią kursorem.
+ * @param {number} cardIndex Indeks karty, która ma zostać powiększona.
+ */
 function powieksz(cardIndex) {
   const wybranaKarta = document.querySelector(
     `.card[indexKarty="${cardIndex}"]`
@@ -70,6 +115,10 @@ function powieksz(cardIndex) {
   wybranaKarta.style.transform = "scale(1.1)";
 }
 
+/**
+ * Przywraca wybranej karcie jej pierwotny rozmiar po opuszczeniu z niej kursora.
+ * @param {number} cardIndex Indeks karty, która ma zostać zmniejszona.
+ */
 function zmniejsz(cardIndex) {
   const wybranaKarta = document.querySelector(
     `.card[indexKarty="${cardIndex}"]`
@@ -77,6 +126,11 @@ function zmniejsz(cardIndex) {
   wybranaKarta.style.transform = "scale(1)";
 }
 
+/**
+ * Jeśli to możliwe to odwraca kartę po kliknięciu i jeśli odwrócone są dwie karty, to poprzez wywołanie odpowiedniej funkcji sprawdza,
+ * czy odkryte karty pasują do siebie.
+ * @param {number} cardIndex Indeks klikniętej karty.
+ */
 function flipCard(cardIndex) {
   if (kartySaOdwrocone) return; //jesli poprzednie karty jeszcze sa odkryte, to nie mozna kolejnych kart odwrocic
   const clickedCard = document.querySelector(
@@ -94,6 +148,11 @@ function flipCard(cardIndex) {
   }
 }
 
+/**
+ * Sprawdza, czy dwie odkryte karty pasują do siebie. W przypadku zgodności, karty zostają ukryte na planszy.
+ * W przeciwnym razie, karty zostają ponownie zakryte. W obu przypadkach te czynności wykonują się po upływie pół sekundy.
+ * Aktualizuje licznik ruchów gracza na stronie.
+ */
 function czyPasuja() {
   const [firstCard, secondCard] = odwroconekarty;
   const firstImg = podwojonaTablicaImg[firstCard];
@@ -127,12 +186,20 @@ function czyPasuja() {
   odwroconekarty = [];
 }
 
+/**
+ * Sprawdza, czy wszystkie karty z planszy zostały sparowane. Jeśli wszystkie są sparowane, uruchamia podaną funkcję wywołania zwrotnego.
+ * @param {Function} callback Funkcja wywołania zwrotnego do uruchomienia po zakończeniu gry.
+ */
 function czyGraSieSkonczyla(callback) {
   if (sprarowanekarty.length === podwojonaTablicaImg.length) {
     callback();
   }
 }
 
+/**
+ * Funkcja obsługująca zakończenie gry. Zapisuje ostateczne dane gracza do localStorage
+ * w formacie JSON, a następnie aktualizuje widok planszy gry i wyników.
+ */
 function zakonczenie() {
   //zapisanie ostatecznych danych gracza do localStorage po zakończeniu gry w formacie json
   localStorage.setItem("gracz", JSON.stringify(gracz));
@@ -141,20 +208,33 @@ function zakonczenie() {
   gameBoard.innerHTML = `<div class="wygrana"><h1>Brawo ${gracz.imie}! Gra skończona w ${gracz.iloscRuchow} ruchach.</h1></div>`;
   scoreElement.style.display = "none";
 
-  czyMniejNiz20().then((result) => {
-    if (result) {
-      scoreElement.innerHTML = `<div class="score"><h2>Gratulacje, twój wynik mieści się w mniej niż 20 ruchach!</h2></div>`;
-    } else {
-      scoreElement.innerHTML = `<div class="score"><h2>Twój wynik przekracza 20 ruchów. Następnym razem postaraj się uzyskać lepszy wynik</h2></div>`;
-    }
-    scoreElement.style.display = "flex";
-  });
+  czyMniejNiz20()
+    .then((result) => {
+      if (result < 20) {
+        scoreElement.innerHTML = `<div class="score"><h2>Gratulacje, twój wynik mieści się w mniej niż 20 ruchach!</h2></div>`;
+      } else {
+        scoreElement.innerHTML = `<div class="score"><h2>Twój wynik przekracza 20 ruchów. Następnym razem postaraj się uzyskać lepszy wynik</h2></div>`;
+      }
+      scoreElement.style.display = "flex";
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
+/**
+ * Funkcja zwracająca Promise, które zwróci ilość ruchów gracza po upływie pół sekundy.
+ * @returns {Promise<number>} Promise z ilością ruchów gracza.
+ * @reject {string} Komunikat błędu w przypadku niepowodzenia.
+ */
 function czyMniejNiz20() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(gracz.iloscRuchow < 20);
+      if (gracz.iloscRuchow) {
+        resolve(gracz.iloscRuchow);
+      } else {
+        reject("Wystąpił błąd w odczycie ilości ruchów.");
+      }
     }, 500);
   });
 }

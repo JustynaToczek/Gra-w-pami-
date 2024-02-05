@@ -1,3 +1,7 @@
+/**
+ * tablica przechowująca ścieżki do zdjęć.
+ * @type {string[]}
+ */
 const tablicaImg = [
   "img/pies.jpg",
   "img/kot.jpg",
@@ -9,7 +13,10 @@ const tablicaImg = [
   "img/zyrafa.jpg",
 ];
 
-//algorytm tasowania Fisher-Yates
+/**
+ * Algorytm tasowania Fisher-Yates dla danej tablicy.
+ * @param {Array} array Tablica do przetasowania.
+ */
 function mieszaj(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
