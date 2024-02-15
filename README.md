@@ -7,7 +7,7 @@
 ### Spis treści
  1.	[Zdefiniowanie problemu do realizacji](#1-zdefiniowanie-problemu-do-realizacji)</br>
 2.	Propozycja rozwiązania problemu</br>
-3.	Testowanie</br>
+3.	[Testowanie](#3.-testowanie)</br>
 4.	Dokumentacja JSDoc</br>
 5.	Źródła i prawa autorskie</br>
 
