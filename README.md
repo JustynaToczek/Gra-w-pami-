@@ -5,9 +5,9 @@
 <img src="https://github.com/JustynaToczek/Aplikacja-do-organizacji-czasu/assets/113525212/98861275-57df-4b53-a553-a0576f68ad8e" width="700">
 
 ### Spis treści
- 1.	[Zdefiniowanie problemu do realizacji](#1-zdefiniowanie-problemu-do-realizacji)</br>
+1. Zdefiniowanie problemu do realizacji</br>
 2.	Propozycja rozwiązania problemu</br>
-3.	[Testowanie](#3.-testowanie)</br>
+3.	Testowanie</br>
 4.	Dokumentacja JSDoc</br>
 5.	Źródła i prawa autorskie</br>
 
